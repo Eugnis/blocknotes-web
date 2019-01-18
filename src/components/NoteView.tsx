@@ -10,6 +10,9 @@ import {
 import { API_URL, WEB3_PROVIDER } from 'src/constants';
 import { INote } from 'src/types/Note';
 import Web3 = require('web3')
+import Footer from './Footer';
+import Header from './Header';
+import IconGithub from './IconGithub';
 import NoteCard from './NoteCard';
 
 export interface IProps extends RouteComponentProps<any> {
@@ -40,13 +43,23 @@ class NoteView extends React.Component<IProps, IState> {
     public render() {
         // const txTime = moment(this.state.note.tx_time)
         return (
-            <Container>
+            <div>
+                <IconGithub />
+            
+            <Container style={{ paddingTop: 10 }}>
+                <Row>
+                    <Col sm="12">
+                        <Header />
+                    </Col>
+                </Row>
                 <Row>
                     <Col sm="12">
                         {this.state.note.text_preview && <NoteCard note={this.state.note} web3Instance={this.state.web3Instance} fullInfo={true} />}
                     </Col>
                 </Row>
             </Container>
+            <Footer />
+            </div>
         );
     }
 

@@ -93,7 +93,7 @@ class NoteCard extends React.Component<IProps, IState> {
                             <NavLink href={this.noteLink(this.state.note.hash)} target="_blank">{this.state.note.hash}</NavLink>
                         </CardTitle> :
                         <CardTitle>
-                            <span style={{color:"#007bff"}} >{this.state.note.hash}</span>
+                            <span style={{color:"#007bff"}} >{this.state.note.hash}</span><br />
                             <Badge color="info" href={this.noteReadMore(this.state.note.hash)} target="_blank">More info</Badge>
                         </CardTitle>}
                         {this.state.dataFile !== "" &&
@@ -181,7 +181,7 @@ class NoteCard extends React.Component<IProps, IState> {
             weiBN = weiBN.mul(web3.utils.toBN(gasPrice))
         }
         // weiBN = weiBN.mul(web3.utils.toBN(ethPrice))
-        const eth = web3.utils.fromWei(weiBN, "ether").toString()
+        const eth = web3.utils.fromWei(weiBN.toString(), "ether").toString()
 
         return `${eth}ETH ≈${(parseFloat(eth) * ethPrice).toPrecision(2)}$`
     }
