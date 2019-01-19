@@ -74,7 +74,6 @@ class NoteCard extends React.Component<IProps, IState> {
             const tx = await this.loadTx()
             const txData = web3.utils.hexToBytes(tx.input)
             const base64data = Buffer.from(txData).toString('base64');
-            // console.log(this.props.note.data_type, base64data)
             const dataString = "data:" + this.props.note.data_type + ";base64," + base64data
 
             const file = this.base64toBlob(base64data, this.props.note.data_type)
@@ -95,10 +94,10 @@ class NoteCard extends React.Component<IProps, IState> {
                             <NavLink href={this.noteLink(this.state.note.hash)} target="_blank">{this.state.note.hash}</NavLink>
                         </CardTitle> :
                         <CardTitle>
-                            <span style={{color:"#007bff"}} >{this.state.note.hash}</span><br />
+                            <span style={{ color: "#007bff" }} >{this.state.note.hash}</span><br />
                             <Badge color="info" href={this.noteReadMore(this.state.note.hash)} target="_blank">More info</Badge>
                         </CardTitle>}
-                        {this.state.dataFile !== "" &&
+                    {this.state.dataFile !== "" &&
                         <Container style={{ placeItems: "center" }}>
                             {this.state.note.data_type.includes("image") &&
                                 <Row style={{ placeItems: "center" }}>
@@ -118,40 +117,40 @@ class NoteCard extends React.Component<IProps, IState> {
                                 </Col>
                             </Row>
                         </Container>}
-                        {this.state.fullInfo ?
-                            this.state.fullTransaction.from &&
-                            <LoadingOverlay
-                        active={this.state.fullTransaction.from}
-                        fadeSpeed={500}
-                        spinner={<LoadingSpinner />}>
-                        <Container >
-                                <Row style={{justifyContent: "center"}}>
+                    {this.state.fullInfo ?
+                        this.state.fullTransaction.from &&
+                        <LoadingOverlay
+                            active={!this.state.fullTransaction.from}
+                            fadeSpeed={500}
+                            spinner={<LoadingSpinner />}>
+                            <Container >
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>From:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.from}{" "}<Badge color="info" href={this.addrLink(this.state.fullTransaction.from)} target="_blank">Etherscan</Badge></Col>
                                 </Row>
-                                <Row style={{justifyContent: "center"}}>
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>To:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.to}{" "}<Badge color="info" href={this.addrLink(this.state.fullTransaction.to)} target="_blank">Etherscan</Badge></Col>
                                 </Row>
-                                <Row style={{justifyContent: "center"}}>
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>Fee:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.gasPrice} ({this.state.feePrice})</Col>
                                 </Row>
-                                <Row style={{justifyContent: "center"}}>
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>Value:</strong></Col>
                                     <Col md="6">{this.state.txPrice}</Col>
                                 </Row>
-                                <Row style={{justifyContent: "center"}}>
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>Text:</strong></Col>
                                     <Col md="6">{this.state.note.text_preview}</Col>
                                 </Row>
-                                <Row style={{justifyContent: "center"}}>
+                                <Row style={{ justifyContent: "center" }}>
                                     <Col md="1"><strong>HEX:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.input}</Col>
                                 </Row>
                             </Container>
-                    </LoadingOverlay> : this.state.printableHEX !== "" ? <code>Text: {this.state.note.text_preview}<br />HEX: {this.state.printableHEX}</code> :
-                                this.state.isPrintable ? <code>{this.state.note.text_preview}</code> : <code>Could be not printable. <a href="javascript:void(0)" onClick={this.toggleViewUnknown}>View?</a></code>}
+                        </LoadingOverlay> : this.state.printableHEX !== "" ? <code>Text: {this.state.note.text_preview}<br />HEX: {this.state.printableHEX}</code> :
+                            this.state.isPrintable ? <code>{this.state.note.text_preview}</code> : <code>Could be not printable. <a href="javascript:void(0)" onClick={this.toggleViewUnknown}>View?</a></code>}
                     <CardText>
                         <small id={"timeTooltip_" + this.state.note.id} className="text-muted">{this.state.txTime.fromNow()}</small>
                         <Tooltip placement="bottom" isOpen={this.state.timeTooltipOpen} target={"timeTooltip_" + this.state.note.id} toggle={this.toggle}>
