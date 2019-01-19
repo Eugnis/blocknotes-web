@@ -1,5 +1,6 @@
 import * as moment from 'moment'
 import * as React from 'react';
+import LoadingOverlay from 'react-loading-overlay';
 import {
     Badge,
     Card,
@@ -18,6 +19,7 @@ import Container from 'reactstrap/lib/Container';
 import { INote } from 'src/types/Note';
 import Web3 = require('web3')
 import { Transaction } from 'web3/eth/types';
+import LoadingSpinner from './LoadingSpinner';
 import './NoteCard.css'
 
 export interface IProps {
@@ -115,11 +117,14 @@ class NoteCard extends React.Component<IProps, IState> {
                                     <a href={this.state.fileURL} download={this.state.note.hash + "." + this.state.note.text_preview}>Download</a>
                                 </Col>
                             </Row>
-                        </Container>
-                    }
+                        </Container>}
                         {this.state.fullInfo ?
                             this.state.fullTransaction.from &&
-                            <Container >
+                            <LoadingOverlay
+                        active={this.state.fullTransaction.from}
+                        fadeSpeed={500}
+                        spinner={<LoadingSpinner />}>
+                        <Container >
                                 <Row style={{justifyContent: "center"}}>
                                     <Col md="1"><strong>From:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.from}{" "}<Badge color="info" href={this.addrLink(this.state.fullTransaction.from)} target="_blank">Etherscan</Badge></Col>
@@ -144,15 +149,9 @@ class NoteCard extends React.Component<IProps, IState> {
                                     <Col md="1"><strong>HEX:</strong></Col>
                                     <Col md="6">{this.state.fullTransaction.input}</Col>
                                 </Row>
-                                {/* From: {this.state.fullTransaction.from}<Badge color="info" href={this.addrLink(this.state.fullTransaction.from)} target="_blank">Etherscan</Badge><br />
-                                To: {this.state.fullTransaction.to}<Badge color="info" href={this.addrLink(this.state.fullTransaction.to)} target="_blank">Etherscan</Badge><br />
-                                Fee: {this.state.fullTransaction.gasPrice} ({this.state.feePrice})<br />
-                                Value: {this.state.txPrice}<br />
-                                Text: {this.state.note.text_preview}<br />
-                                HEX: {this.state.fullTransaction.input}<br /> */}
-                            </Container> : this.state.printableHEX !== "" ? <code>Text: {this.state.note.text_preview}<br />HEX: {this.state.printableHEX}</code> :
+                            </Container>
+                    </LoadingOverlay> : this.state.printableHEX !== "" ? <code>Text: {this.state.note.text_preview}<br />HEX: {this.state.printableHEX}</code> :
                                 this.state.isPrintable ? <code>{this.state.note.text_preview}</code> : <code>Could be not printable. <a href="javascript:void(0)" onClick={this.toggleViewUnknown}>View?</a></code>}
-                        {/* <code>{this.convertUnicode(this.props.note.text_preview)}</code> */}
                     <CardText>
                         <small id={"timeTooltip_" + this.state.note.id} className="text-muted">{this.state.txTime.fromNow()}</small>
                         <Tooltip placement="bottom" isOpen={this.state.timeTooltipOpen} target={"timeTooltip_" + this.state.note.id} toggle={this.toggle}>
@@ -194,12 +193,10 @@ class NoteCard extends React.Component<IProps, IState> {
     }
 
     private noteLink(hash: string) {
-        // return "/" + hash
         return "https://etherscan.io/tx/" + hash
     }
 
     private addrLink(hash: string) {
-        // return "/" + hash
         return "https://etherscan.io/address/" + hash
     }
 

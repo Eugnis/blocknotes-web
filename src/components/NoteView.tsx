@@ -41,11 +41,9 @@ class NoteView extends React.Component<IProps, IState> {
     }
 
     public render() {
-        // const txTime = moment(this.state.note.tx_time)
         return (
             <div>
                 <IconGithub />
-            
             <Container style={{ paddingTop: 10 }}>
                 <Row>
                     <Col sm="12">

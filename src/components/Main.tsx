@@ -15,7 +15,6 @@ import {
     InputGroupButtonDropdown,
     Nav,
     Navbar,
-    // NavbarBrand,
     Pagination,
     PaginationItem,
     PaginationLink,
@@ -29,12 +28,9 @@ import Web3 = require('web3')
 import Footer from './Footer';
 import Header from './Header';
 import IconGithub from './IconGithub';
+import LoadingSpinner from './LoadingSpinner';
 import './Main.css'
 import NoteCard from './NoteCard';
-
-// export interface IProps {
-
-// }
 
 export interface IState {
     from: number
@@ -47,7 +43,6 @@ export interface IState {
     dataTypeOpen: boolean
     web3Instance: Web3
     loading: boolean
-    // mode: string
 }
 
 class Main extends React.Component<{}, IState> {
@@ -58,7 +53,6 @@ class Main extends React.Component<{}, IState> {
             dataTypeOpen: false,
             from: 0,
             loading: true,
-            // mode: "main",
             notes: [],
             quantity: 100,
             searchText: "",
@@ -78,12 +72,8 @@ class Main extends React.Component<{}, IState> {
             <div className="bg-light">
                 <IconGithub />
                 <Container style={{ paddingTop: 10 }}>
-
-                    {/* <div style={{ marginTop: 50 }}> */}
                     <Header />
-                    {/* </div> */}
                     <Navbar style={{ placeContent: "center" }} color="light" light={true} expand="md" sticky="top" >
-                        {/* <NavbarBrand href="/">reactstrap</NavbarBrand> */}
                         <Nav pills={true} navbar={true}>
 
                             <Row>
@@ -105,9 +95,6 @@ class Main extends React.Component<{}, IState> {
                                         </Col>
 
                                     </Row>
-                                    {/* 
-                                    <Button onClick={this.pageBack}>{"<-"}</Button>
-                                    <Button disabled={this.state.from === 0} onClick={this.pageForward}>{"->"}</Button> */}
                                 </Col>
                                 <Col sm="6">
                                     <InputGroup>
@@ -145,21 +132,11 @@ class Main extends React.Component<{}, IState> {
                         </Nav>
                     </Navbar>
 
-                    {/* <br /> */}
+
                     <LoadingOverlay
                         active={this.state.loading}
                         fadeSpeed={500}
-                        spinner={<div className="lds-grid">
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                        </div>}
+                        spinner={<LoadingSpinner />}
                     >
                         <Row>
                             <Col md="12">
@@ -186,20 +163,6 @@ class Main extends React.Component<{}, IState> {
 
     private onSearchTextChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ searchText: event.target.value })
     private onSearchTypeChange = (type: string[]) => this.setState({ searchType: type })
-    // private onModeChange = (mode: string) => this.setState({ mode })
-
-    // private onScroll = () => {
-    //     console.log("skroll!", window.pageYOffset)
-    //     if (window.pageYOffset > this.state.fixedNav) {
-    //         if (this.state.headerSticky !== true) {
-    //             this.setState({ headerSticky: true })
-    //         }
-    //     } else {
-    //         if (this.state.headerSticky !== false) {
-    //             this.setState({ headerSticky: false })
-    //         }
-    //     }
-    // }
 
     private onSearchText = async () => {
         await this.loadNotes()
@@ -252,7 +215,6 @@ class Main extends React.Component<{}, IState> {
                 body: JSON.stringify(noteSearch),
                 method: 'POST'
             })
-            // console.log(await notesReq.text())
             const notesListJson: INote[] = await notesReq.json()
             this.setState({ notes: notesListJson, loading: false })
         }

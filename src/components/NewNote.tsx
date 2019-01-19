@@ -71,17 +71,13 @@ class NewNote extends React.Component<IProps, IState> {
             publishType: "",
 
         };
-        // this.noteLink = this.noteLink.bind(this)
-        // this.toggle = this.toggle.bind(this)
     }
 
     public async componentDidMount() {
         await this.getEthPrice()
-        // await this.loadNote(this.props.match.params.hash)
     }
 
     public render() {
-        // const txTime = moment(this.state.note.tx_time)
         return (
             <div>
                 <Card>
@@ -131,12 +127,12 @@ class NewNote extends React.Component<IProps, IState> {
                     <CardFooter className="text-muted">
                         <div>Est. fee price for {this.state.dataLength} bytes: {this.state.estPrice}</div>
                         {this.state.dataLength > 0 && this.state.publishDataHex !== "" && <Container>
-                                <Button onClick={
-                                    // tslint:disable-next-line:jsx-no-lambda
-                                    () => this.onPublishTypeSelect("manually")}>Manually</Button>{" "}
-                                <Button disabled={this.state.isProcessing} onClick={
-                                    // tslint:disable-next-line:jsx-no-lambda
-                                    () => this.onPublishTypeSelect("automatically")}>Automatically (with MetaMask)</Button>
+                            <Button onClick={
+                                // tslint:disable-next-line:jsx-no-lambda
+                                () => this.onPublishTypeSelect("manually")}>Manually</Button>{" "}
+                            <Button disabled={this.state.isProcessing} onClick={
+                                // tslint:disable-next-line:jsx-no-lambda
+                                () => this.onPublishTypeSelect("automatically")}>Automatically (with MetaMask)</Button>
 
                             {!this.state.metaMaskNetwork ? <Alert color="warning">
                                 You can publish note automatically via MetaMask but you have no extension. Choose "Manually" or <a href="https://metamask.io" target="_blank">install Metamask extension</a> to do automatically
@@ -148,12 +144,12 @@ class NewNote extends React.Component<IProps, IState> {
                                 </Alert>}
                         </Container>}
                         {this.state.publishType === "manually" &&
-                        <div>
-                            <h4>Manually publishing</h4>
-                            Send ETH transaction to any address with next input data (HEX): <br/>
-                            <code>{this.state.publishDataHex}</code>
-                        </div>}
-                        
+                            <div>
+                                <h4>Manually publishing</h4>
+                                Send ETH transaction to any address with next input data (HEX): <br />
+                                <code>{this.state.publishDataHex}</code>
+                            </div>}
+
                     </CardFooter>
                 </Card>
             </div>
@@ -176,7 +172,7 @@ class NewNote extends React.Component<IProps, IState> {
     }
 
     private onPublishTypeSelect = async (type: string) => {
-        if (this.state.publishType === type ) {
+        if (this.state.publishType === type) {
             this.setState({ publishType: "", isProcessing: false })
             return
         }
@@ -240,8 +236,7 @@ class NewNote extends React.Component<IProps, IState> {
             const estGas = await web3.eth.estimateGas(previewTx)
             const gasPrice = await web3.eth.getGasPrice()
             const ethFee = web3.utils.fromWei(estGas * gasPrice + "", "ether")
-            // console.log(`GasEst: ${estGas} GasPrice: ${gasPrice} ETHFeeEst: ${ethFee}ETH HEX: ${hex}`)
-            this.setState({estGas, gasPrice, publishDataHex: hex, dataLength: bytes, estPrice: `${ethFee}ETH ≈${(parseFloat(ethFee) * this.state.ethPrice).toPrecision(2)}$` })
+            this.setState({ estGas, gasPrice, publishDataHex: hex, dataLength: bytes, estPrice: `${ethFee}ETH ≈${(parseFloat(ethFee) * this.state.ethPrice).toPrecision(2)}$` })
 
         } else if (this.state.dataType === DATA_TYPES_NEW[1] && this.state.dataFile !== {} as File) {
             // File data
@@ -250,32 +245,25 @@ class NewNote extends React.Component<IProps, IState> {
             const limit = 120000
             if (fileResult && fileResult.byteLength < limit) {
                 const byteArray = new Uint8Array(fileResult)
-                // console.log(byteArray)
                 for (let i = 0; i < byteArray.byteLength; i++) {
                     fileByteArray.push(byteArray[i])
                 }
                 const hex = web3.utils.bytesToHex(fileByteArray)
-                // console.log(byteArray.byteLength, byteArray.byteLength < 120000)
                 const previewTx = this.createNewTransaction(hex, "")
                 const estGas = await web3.eth.estimateGas(previewTx)
                 const gasPrice = await web3.eth.getGasPrice()
                 const ethFee = web3.utils.fromWei(estGas * gasPrice + "", "ether")
-                // console.log(`GasEst: ${estGas} GasPrice: ${gasPrice} ETHFeeEst: ${ethFee}ETH`)
-                this.setState({estGas, gasPrice, publishDataHex: hex, dataLength: fileResult.byteLength, estPrice: `${ethFee}ETH ≈${(parseFloat(ethFee) * this.state.ethPrice).toPrecision(2)}$` })
+                this.setState({ estGas, gasPrice, publishDataHex: hex, dataLength: fileResult.byteLength, estPrice: `${ethFee}ETH ≈${(parseFloat(ethFee) * this.state.ethPrice).toPrecision(2)}$` })
             } else {
                 toast("File should be no more than 115KB (ETH limit)", { type: toast.TYPE.ERROR });
             }
 
-
-
-            // const hex = web3.utils.bytesToHex(this.state.dataFile.getAs)
         } else {
             this.setState({ estPrice: "Fill fields to calculate" })
         }
     }
 
     private createNewTransaction = (dataHex: string, fromAddr: string): Tx => {
-        // const web3 = this.props.web3Instance
         const tx = fromAddr === "" ? {
             data: dataHex,
             to: DEFAULT_ADDRESS_ETH
@@ -313,24 +301,6 @@ class NewNote extends React.Component<IProps, IState> {
             this.setState({ ethPrice: price })
         }
     }
-
-    // private noteLink(hash: string) {
-    //     return "https://etherscan.io/tx/" + hash
-    // }
-
-    // private toggle = () => this.setState({ timeTooltipOpen: !this.state.timeTooltipOpen })
-
-    // private async loadNote(hash: string) {
-    //     try {
-    //         const notesReq = await fetch(API_URL + "/note/view/" + hash, {
-    //             method: 'GET'
-    //         })
-    //         const noteJson: INote = await notesReq.json()
-    //         this.setState({ note: noteJson })
-    //     }
-    //     catch (err) { process.stdout.write(err) }
-    // }
-
 }
 
 export default NewNote;
