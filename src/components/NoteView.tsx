@@ -1,5 +1,6 @@
 // import * as moment from 'moment'
 import * as React from 'react';
+import ReactGA from 'react-ga';
 import { RouteComponentProps } from 'react-router-dom';
 import {
     Col,
@@ -37,6 +38,7 @@ class NoteView extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount() {
+        ReactGA.pageview(window.location.pathname + window.location.search);
         await this.loadNote(this.props.match.params.hash)
     }
 

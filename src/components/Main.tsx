@@ -1,4 +1,5 @@
 import * as React from 'react';
+import ReactGA from 'react-ga';
 import LoadingOverlay from 'react-loading-overlay';
 import {
     Button,
@@ -64,6 +65,7 @@ class Main extends React.Component<{}, IState> {
     }
 
     public async componentDidMount() {
+        ReactGA.pageview(window.location.pathname + window.location.search);
         await this.loadNotes()
     }
 
