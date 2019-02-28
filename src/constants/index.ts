@@ -1,5 +1,5 @@
 // export const API_URL = '';
-export const API_URL = '/server';
+export const API_URL = process.env.REACT_APP_API_ENDPOINT;
 
 export const DEFAULT_ADDRESS_ETH = '0x1Fd9fDc0cB877E8bBcAa603882668F0A7c6E05E7'
 export const WEB3_PROVIDER = 'https://mainnet.infura.io/v3/72972d2f7624494497fdf19174fd1083';
