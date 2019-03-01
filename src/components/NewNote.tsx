@@ -116,7 +116,7 @@ class NewNote extends React.Component<IProps, IState> {
                 </Container>}
                 {this.state.publishType === "manually" &&
                     <div>
-                        <strong>Manually publishing</strong>
+                        <Header as="h4">Manually publishing</Header>
                         Send ETH transaction to any address with next input data (HEX): <br />
                         <p><small>{this.state.publishDataHex}</small></p>
                     </div>}

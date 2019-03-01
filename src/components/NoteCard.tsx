@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import * as React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 
-import { Button, Card, Container, Grid, Label, Popup } from 'semantic-ui-react';
+import { Button, Card, Container, Grid, Image, Label, Popup } from 'semantic-ui-react';
 
 import { INote } from 'src/types/Note';
 import Web3 = require('web3')
@@ -75,7 +75,7 @@ class NoteCard extends React.Component<IProps, IState> {
             <Card style={this.state.fullInfo ? { wordWrap: "break-word", width: "auto" } : { wordWrap: "break-word" }}>
                 <Card.Content>
                     <Card.Header>
-                        <img src={this.netIcon(this.state.note.net_name)} className="noteImg" alt="img-1" />
+                        <Image src={this.netIcon(this.state.note.net_name)} className="noteImg" alt="img-1" />
                     </Card.Header>
                     <Card.Description>
                         {this.state.fullInfo ?
@@ -93,10 +93,10 @@ class NoteCard extends React.Component<IProps, IState> {
                                 {this.state.note.data_type.includes("image") &&
                                     <Grid.Row style={{ placeItems: "center" }}>
                                         <Grid.Column>
-                                            <img
+                                            <Image
                                                 onError={
                                                     // tslint:disable-next-line:jsx-no-lambda
-                                                    (e) => {
+                                                    () => {
                                                         this.setState({ dataFile: process.env.PUBLIC_URL + `images/not_found_icon.svg` })
                                                     }}
                                                 src={this.state.dataFile} style={{ maxWidth: "200px", maxHeight: "200px" }} alt={this.state.note.hash} />
