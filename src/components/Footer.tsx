@@ -1,6 +1,4 @@
 import * as React from 'react';
-// import Container from 'reactstrap/lib/Container';
-
 
 function Footer() {
     return (

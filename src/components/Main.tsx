@@ -1,35 +1,31 @@
 import * as React from 'react';
 import ReactGA from 'react-ga';
-import LoadingOverlay from 'react-loading-overlay';
 import {
     Button,
-    CardColumns,
-    Col,
+    Card,
     Container,
     Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
+    DropdownItemProps,
+    DropdownProps,
+    Grid,
+    Icon,
     Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupButtonDropdown,
-    Nav,
-    Navbar,
+    Menu,
     Pagination,
-    PaginationItem,
-    PaginationLink,
-    Row,
-
-} from 'reactstrap';
+    Placeholder,
+    Segment,
+    Select,
+    Sticky
+} from 'semantic-ui-react'
 import { API_URL, DATA_TYPES, SEARCH_TYPES, WEB3_PROVIDER } from 'src/constants';
+import { IApiResponse } from 'src/types/ApiResponse';
 import { INote } from 'src/types/Note';
 import { INoteSearch } from 'src/types/NoteSearch';
 import Web3 = require('web3')
 import Footer from './Footer';
 import Header from './Header';
 import IconGithub from './IconGithub';
-import LoadingSpinner from './LoadingSpinner';
+// import LoadingSpinner from './LoadingSpinner';
 import './Main.css'
 import NoteCard from './NoteCard';
 
@@ -38,27 +34,33 @@ export interface IState {
     quantity: number
     notes: INote[]
     searchText: string
-    searchType: string[]
-    searchTypeOpen: boolean
-    dataType: string[]
-    dataTypeOpen: boolean
+    searchType: string
+    searchTypePlaceholder: string
+    dataType: string
     web3Instance: Web3
     loading: boolean
+    totalCount: number
+    totalPages: number
+    activePage: number
 }
 
 class Main extends React.Component<{}, IState> {
+    private contextRef = React.createRef<HTMLDivElement>()
+
     constructor(props: {}) {
         super(props);
         this.state = {
-            dataType: DATA_TYPES[0],
-            dataTypeOpen: false,
+            activePage: 1,
+            dataType: DATA_TYPES[0][1],
             from: 0,
             loading: true,
             notes: [],
-            quantity: 100,
+            quantity: 50,
             searchText: "",
-            searchType: SEARCH_TYPES[0],
-            searchTypeOpen: false,
+            searchType: SEARCH_TYPES[0][1],
+            searchTypePlaceholder: SEARCH_TYPES[0][2],
+            totalCount: 0,
+            totalPages: 0,
             web3Instance: new Web3(WEB3_PROVIDER)
         };
         this.loadNotes = this.loadNotes.bind(this)
@@ -66,159 +68,184 @@ class Main extends React.Component<{}, IState> {
 
     public async componentDidMount() {
         ReactGA.pageview(window.location.pathname + window.location.search);
-        await this.loadNotes()
+        await this.loadNotes(this.state.activePage)
     }
+
+    public getOptions = (arr: string[][]) => arr.map((val, i) => {
+        return { key: i, text: val[0], value: val[1] } as DropdownItemProps
+    })
+
+    public handlePaginationChange = async (e: any, { activePage }: any) => {
+        await this.loadNotes(activePage);
+    }
+
+    public refreshNotes = async () => await this.loadNotes(this.state.activePage)
+
 
     public render() {
         return (
             <div className="bg-light">
                 <IconGithub />
-                <Container style={{ paddingTop: 10 }}>
+                <Container style={{ paddingTop: "1rem" }}>
                     <Header />
-                    <Navbar style={{ placeContent: "center" }} color="light" light={true} expand="md" sticky="top" >
-                        <Nav pills={true} navbar={true}>
+                    <Sticky context={this.contextRef.current!}>
+                        <Menu stackable={true}>
+                            <Menu.Menu position="left">
+                                <Menu.Item>
+                                    <Button color="violet" basic={true}  icon='refresh' labelPosition='left' content="Refresh" onClick={this.refreshNotes}/>
+                                </Menu.Item>
+                                <Menu.Item>
+                                    <Pagination
+                                        ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+                                        onPageChange={this.handlePaginationChange}
+                                        pointing={true}
+                                        secondary={true}
+                                        boundaryRange={0}
+                                        defaultActivePage={this.state.activePage}
+                                        totalPages={this.state.totalPages}
+                                    />
+                                </Menu.Item>
+                            </Menu.Menu>
+                            <Menu.Menu>
+                                <Menu.Item>
+                                    <Input type='text' placeholder={this.state.searchTypePlaceholder} value={this.state.searchText} onChange={this.onSearchTextChange} action={true}>
+                                        <Select compact={true} options={this.getOptions(SEARCH_TYPES)} defaultValue='textpreview' onChange={
+                                            // tslint:disable-next-line:jsx-no-lambda
+                                            (e: any, { value }: DropdownProps) => {
+                                                const placeholder = SEARCH_TYPES.find((val) => val[1] === value)!
+                                                this.onSearchTypeChange(value as string, placeholder[2])
+                                            }
+                                        } />
+                                        <input />
+                                        <Button type='submit' onClick={this.onSearchText}>Search</Button>
+                                    </Input>
+                                </Menu.Item>
+                            </Menu.Menu>
+                            <Menu.Menu position="right">
+                                <Menu.Item>
+                                    <Dropdown
+                                        inline={true}
+                                        header='Choose data type'
+                                        options={this.getOptions(DATA_TYPES)}
+                                        defaultValue={this.state.dataType}
+                                        onChange={
+                                            // tslint:disable-next-line:jsx-no-lambda
+                                            (e: any, { value }) => this.onDataTypeChange(value as string)
+                                        }
+                                    />
+                                </Menu.Item>
+                            </Menu.Menu>
+                        </Menu >
+                    </Sticky>
 
-                            <Row>
-                                <Col sm="3">
-                                    <Row>
-                                        <Col sm="6">
-                                            <Button outline={true} color="info" onClick={this.loadNotes}>Refresh</Button>
-                                        </Col>
-                                        <Col sm="6">
-                                            <Pagination aria-label="navigation">
-                                                <PaginationItem disabled={this.state.notes.length < this.state.quantity}>
-                                                    <PaginationLink previous={true} onClick={this.pageBack} />
-                                                </PaginationItem>
-
-                                                <PaginationItem disabled={this.state.from === 0}>
-                                                    <PaginationLink next={true} onClick={this.pageForward} />
-                                                </PaginationItem>
-                                            </Pagination>
-                                        </Col>
-
-                                    </Row>
-                                </Col>
-                                <Col sm="6">
-                                    <InputGroup>
-                                        <InputGroupButtonDropdown addonType="prepend" isOpen={this.state.searchTypeOpen} toggle={this.toggleSearchType}>
-                                            <DropdownToggle outline={true} color="secondary" caret={true}>
-                                                {this.state.searchType[0]}
-                                            </DropdownToggle>
-                                            <DropdownMenu>
-                                                {SEARCH_TYPES.map(val => <DropdownItem disabled={this.state.searchType === val || (val[1] === "textpreview" && this.state.dataType[1] !== "text")} key={val[1]} onClick={
-                                                    // tslint:disable-next-line:jsx-no-lambda
-                                                    () => this.onSearchTypeChange(val)
-                                                }>{val[0]}</DropdownItem>)}
-                                            </DropdownMenu>
-                                        </InputGroupButtonDropdown>
-                                        <Input type="text" placeholder={this.state.searchType[2]} value={this.state.searchText} onChange={this.onSearchTextChange} />
-                                        <InputGroupAddon addonType="append">
-                                            <Button outline={true} color="success" onClick={this.onSearchText}>Search</Button>
-                                        </InputGroupAddon>
-                                    </InputGroup>
-                                </Col>
-                                <Col sm="3">
-                                    <Dropdown isOpen={this.state.dataTypeOpen} toggle={this.toggleDataType}>
-                                        <DropdownToggle color="info" caret={true}>
-                                            {this.state.dataType[0]}
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                            {DATA_TYPES.map(val => <DropdownItem disabled={this.state.dataType === val} key={val[1]} onClick={
-                                                // tslint:disable-next-line:jsx-no-lambda
-                                                () => this.onDataTypeChange(val)
-                                            }>{val[0]}</DropdownItem>)}
-                                        </DropdownMenu>
-                                    </Dropdown>
-                                </Col>
-                            </Row>
-                        </Nav>
-                    </Navbar>
-
-
-                    <LoadingOverlay
-                        active={this.state.loading}
-                        fadeSpeed={500}
-                        spinner={<LoadingSpinner />}
-                    >
-                        <Row>
-                            <Col md="12">
-
-                                {this.state.notes.length > 0 &&
-                                    <CardColumns>
-                                        {this.state.notes.map(val => {
-                                            return <NoteCard key={val.id} note={val} fullInfo={false} web3Instance={this.state.web3Instance} />
-                                        })}
-                                    </CardColumns>
-                                }
-
-
-
-                            </Col>
-                        </Row>
-                    </LoadingOverlay>
+                    <div ref={this.contextRef} style={{ marginTop: "1rem" }}>
+                        {this.state.loading &&
+                            <Grid columns={3} stackable={true}>
+                                <Grid.Column>
+                                    <Segment raised={true}>
+                                        <Placeholder>
+                                            <Placeholder.Header image={true}>
+                                                <Placeholder.Line />
+                                                <Placeholder.Line />
+                                            </Placeholder.Header>
+                                            <Placeholder.Paragraph>
+                                                <Placeholder.Line length='medium' />
+                                                <Placeholder.Line length='short' />
+                                            </Placeholder.Paragraph>
+                                        </Placeholder>
+                                    </Segment>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Segment raised={true}>
+                                        <Placeholder>
+                                            <Placeholder.Header image={true}>
+                                                <Placeholder.Line />
+                                                <Placeholder.Line />
+                                            </Placeholder.Header>
+                                            <Placeholder.Paragraph>
+                                                <Placeholder.Line length='medium' />
+                                                <Placeholder.Line length='short' />
+                                            </Placeholder.Paragraph>
+                                        </Placeholder>
+                                    </Segment>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Segment raised={true}>
+                                        <Placeholder>
+                                            <Placeholder.Header image={true}>
+                                                <Placeholder.Line />
+                                                <Placeholder.Line />
+                                            </Placeholder.Header>
+                                            <Placeholder.Paragraph>
+                                                <Placeholder.Line length='medium' />
+                                                <Placeholder.Line length='short' />
+                                            </Placeholder.Paragraph>
+                                        </Placeholder>
+                                    </Segment>
+                                </Grid.Column>
+                            </Grid>
+                        }
+                        {this.state.notes.length > 0 &&
+                            <Card.Group itemsPerRow={3}>
+                                {this.state.notes.map(val => {
+                                    return <NoteCard key={val.id} note={val} fullInfo={false} web3Instance={this.state.web3Instance} />
+                                })}
+                            </Card.Group>
+                        }
+                    </div>
                 </Container>
+
                 <Footer />
-            </div>
+            </div >
 
         );
     }
 
+
+
     private onSearchTextChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ searchText: event.target.value })
-    private onSearchTypeChange = (type: string[]) => this.setState({ searchType: type })
+    private onSearchTypeChange = (type: string, text: string) => this.setState({ searchType: type, searchTypePlaceholder: text })
 
     private onSearchText = async () => {
-        await this.loadNotes()
+        await this.loadNotes(1)
     }
 
-    private pageBack = async () => {
-        const from = this.state.quantity + this.state.from
-        await this.setState({ from })
-        await this.loadNotes()
-    }
-
-    private pageForward = async () => {
-        let from = this.state.from - this.state.quantity
-        if (from < 0) {
-            from = 0
+    private onDataTypeChange = async (type: string) => {
+        if (type[1] !== "text" && this.state.searchType === "textpreview") {
+            this.setState({ searchType: SEARCH_TYPES[1][1], searchText: "" })
         }
-        await this.setState({ from })
-        await this.loadNotes()
-    }
-
-    private toggleSearchType = () => this.setState({ searchTypeOpen: !this.state.searchTypeOpen })
-    private toggleDataType = () => this.setState({ dataTypeOpen: !this.state.dataTypeOpen })
-    private onDataTypeChange = async (type: string[]) => {
-        if (type[1] !== "text" && this.state.searchType[1] === "textpreview") {
-            this.setState({ searchType: SEARCH_TYPES[1], searchText: "" })
-        }
-        await this.setState({ dataType: type, from: 0, quantity: 100 })
-        await this.loadNotes()
+        await this.setState({ dataType: type })
+        await this.loadNotes(1)
     }
 
 
 
-    private async loadNotes() {
+    private async loadNotes(page: number) {
         if (!this.state.loading) {
             this.setState({ loading: true })
         }
         try {
+            const from = (page - 1) * this.state.quantity
             const noteSearch = {
                 count: this.state.quantity,
-                data_type: this.state.dataType[1],
-                from: this.state.from,
+                data_type: this.state.dataType,
+                from,
                 net_name: "ethereum",
                 net_type: "mainnet"
             } as INoteSearch
             if (this.state.searchText !== "") {
                 noteSearch.search_text = this.state.searchText
-                noteSearch.search_type = this.state.searchType[1]
+                noteSearch.search_type = this.state.searchType
             }
             const notesReq = await fetch(API_URL + "/note/list", {
                 body: JSON.stringify(noteSearch),
                 method: 'POST'
             })
-            const notesListJson: INote[] = await notesReq.json()
-            this.setState({ notes: notesListJson, loading: false })
+            const apiResp: IApiResponse = await notesReq.json()
+            const notesListJson = apiResp.data as INote[]
+            const totalPages = Math.ceil(apiResp.count / this.state.quantity)
+
+            this.setState({ notes: notesListJson, activePage: page, totalCount: apiResp.count, totalPages, loading: false })
         }
         catch (err) { console.log(err) }
     }

@@ -1,34 +1,10 @@
-// import * as moment from 'moment'
 import * as React from 'react';
 import { toast } from 'react-toastify';
-// import { RouteComponentProps } from 'react-router-dom';
-import {
-    Alert,
-    Button,
-    ButtonGroup,
-    // CardText,
-    // CardTitle,
-    // CustomInput,
-    Card,
-    CardFooter,
-    CardHeader,
-    Col,
-    Container,
-    FormGroup,
-    FormText,
-    Input,
-    Label,
-    // NavLink,
-    // Tooltip,
-} from 'reactstrap';
-import CardBody from 'reactstrap/lib/CardBody';
+
+import { Button, ButtonGroup, Container, Form,  Header, Message, TextAreaProps } from 'semantic-ui-react';
 import { DATA_TYPES_NEW, DEFAULT_ADDRESS_ETH, NETWORK_TYPE } from 'src/constants';
 import Web3 = require('web3')
 import { Tx } from 'web3/eth/types';
-// import Container from 'reactstrap/lib/Container';
-
-// import { API_URL } from 'src/constants';
-// import { INote } from 'src/types/Note';
 
 export interface IProps {
     web3Instance: Web3
@@ -80,78 +56,70 @@ class NewNote extends React.Component<IProps, IState> {
     public render() {
         return (
             <div>
-                <Card>
-                    <CardHeader tag="h3">Creating new note</CardHeader>
-                    <CardBody inverse="true" color="primary">
-                        <FormGroup>
-                            <Label for="networkSelect">Network</Label>
-                            <div>
-                                <ButtonGroup id="networkSelect">
-                                    {NETWORK_TYPE.map(val => <Button key={val} color={this.state.network === val ? "primary" : "secondary"} onClick={
-                                        // tslint:disable-next-line:jsx-no-lambda
-                                        () => this.onNetworkTypeChange(val)
-                                    }><img src={this.netIcon(val)} height="50px" alt={val} /></Button>)}
-                                </ButtonGroup>
-                            </div>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="dataTypeSelect">Data type</Label>
-                            <div>
-                                <ButtonGroup id="dataTypeSelect">
-                                    {DATA_TYPES_NEW.map(val => <Button key={val[1]} color={this.state.dataType === val ? "primary" : "secondary"} onClick={
-                                        // tslint:disable-next-line:jsx-no-lambda
-                                        () => this.onDataTypeChange(val)
-                                    }>{val[0]}</Button>)}
-                                </ButtonGroup>
-                            </div>
-                        </FormGroup>
-                        {this.state.dataType === DATA_TYPES_NEW[0] &&
-                            <FormGroup row={true}>
-                                <Label for="noteText" sm={2}>Text Data</Label>
-                                <Col sm={10}>
-                                    <Input disabled={this.state.isProcessing} type="textarea" name="text" id="noteText" value={this.state.dataText} onChange={this.onTextChange} />
-                                    <FormText color="muted">Data will be encoded in HEX and published in blockchain. Anyone can view it</FormText>
-                                </Col>
-                            </FormGroup>}
-                        {this.state.dataType === DATA_TYPES_NEW[1] &&
-                            <FormGroup row={true}>
-                                <Label for="noteFile" sm={2}>File (Current max 115KB)</Label>
-                                <Col sm={10}>
-                                    <Input disabled={this.state.isProcessing} type="file" name="file" id="noteFile" onChange={this.onFileAdded} />
-                                    <FormText color="muted">
-                                        Data will be encoded in HEX and published in blockchain. Anyone can view it
-                                     </FormText>
-                                </Col>
-                            </FormGroup>}
-                    </CardBody>
-                    <CardFooter className="text-muted">
-                        <div>Est. fee price for {this.state.dataLength} bytes: {this.state.estPrice}</div>
-                        {this.state.dataLength > 0 && this.state.publishDataHex !== "" && <Container>
-                            <Button onClick={
-                                // tslint:disable-next-line:jsx-no-lambda
-                                () => this.onPublishTypeSelect("manually")}>Manually</Button>{" "}
-                            <Button disabled={this.state.isProcessing} onClick={
-                                // tslint:disable-next-line:jsx-no-lambda
-                                () => this.onPublishTypeSelect("automatically")}>Automatically (with MetaMask)</Button>
+                <Header as="h3">Creating new note</Header>
+                <hr className="my-2" />
+                <Form widths="equal">
+                <Header as="h5">Network</Header>
+                    <Form.Group style={{ justifyContent: "center" }}>
 
-                            {!this.state.metaMaskNetwork ? <Alert color="warning">
-                                You can publish note automatically via MetaMask but you have no extension. Choose "Manually" or <a href="https://metamask.io" target="_blank">install Metamask extension</a> to do automatically
-                                </Alert> : this.state.metaMaskNetwork === "Mainnet" ? <Alert color="primary">
-                                    You can publish note automatically via MetaMask. Press button "Automatically" and confirm transaction (you pay only fee)
-                                </Alert> :
-                                    <Alert color="warning">
-                                        If you want your note to be displayed here, please select "Mainnet" in MetaMask (page will be reloaded)
-                                </Alert>}
-                        </Container>}
-                        {this.state.publishType === "manually" &&
-                            <div>
-                                <h4>Manually publishing</h4>
-                                Send ETH transaction to any address with next input data (HEX): <br />
-                                <code>{this.state.publishDataHex}</code>
-                            </div>}
+                    
+                        <ButtonGroup id="networkSelect">
+                            {NETWORK_TYPE.map(val => <Button key={val} color={this.state.network === val ? "blue" : "grey"} onClick={
+                                // tslint:disable-next-line:jsx-no-lambda
+                                () => this.onNetworkTypeChange(val)
+                            }><img src={this.netIcon(val)} height="50px" alt={val} /></Button>)}
+                        </ButtonGroup>
 
-                    </CardFooter>
-                </Card>
+                    </Form.Group>
+                    <Header as="h5">Data type</Header>
+                    <Form.Group style={{ justifyContent: "center" }}>
+
+
+                        <ButtonGroup id="dataTypeSelect">
+                            {DATA_TYPES_NEW.map(val => <Button key={val[1]} color={this.state.dataType === val ? "blue" : "grey"} onClick={
+                                // tslint:disable-next-line:jsx-no-lambda
+                                () => this.onDataTypeChange(val)
+                            }>{val[0]}</Button>)}
+                        </ButtonGroup>
+
+                    </Form.Group>
+                    {this.state.dataType === DATA_TYPES_NEW[0] &&
+                        <div>
+                            <Form.TextArea label='Text Data' disabled={this.state.isProcessing} name="text" id="noteText" value={this.state.dataText} onChange={this.onTextChange} />
+                            <small color="muted">Data will be encoded in HEX and published in blockchain. Anyone can view it</small>
+                        </div>}
+                    {this.state.dataType === DATA_TYPES_NEW[1] &&
+                        <div>
+                            <Form.Input label="File (Current max 115KB)" disabled={this.state.isProcessing} type="file" name="file" id="noteFile" onChange={this.onFileAdded} />
+                            <small color="muted">
+                                Data will be encoded in HEX and published in blockchain. Anyone can view it </small>
+                        </div>}
+                </Form>
+                <hr className="my-2" />
+                <strong>Est. fee price for {this.state.dataLength} bytes: {this.state.estPrice}</strong>
+                {this.state.dataLength > 0 && this.state.publishDataHex !== "" && <Container>
+                    <Button onClick={
+                        // tslint:disable-next-line:jsx-no-lambda
+                        () => this.onPublishTypeSelect("manually")}>Manually</Button>{" "}
+                    <Button disabled={this.state.isProcessing} onClick={
+                        // tslint:disable-next-line:jsx-no-lambda
+                        () => this.onPublishTypeSelect("automatically")}>Automatically (with MetaMask)</Button>
+
+                    {!this.state.metaMaskNetwork ? <Message color="orange">
+                        You can publish note automatically via MetaMask but you have no extension. Choose "Manually" or <a href="https://metamask.io" target="_blank">install Metamask extension</a> to do automatically
+                                </Message> : this.state.metaMaskNetwork === "Mainnet" ? <Message color="blue">
+                            You can publish note automatically via MetaMask. Press button "Automatically" and confirm transaction (you pay only fee)
+                                </Message> :
+                            <Message color="orange">
+                                If you want your note to be displayed here, please select "Mainnet" in MetaMask (page will be reloaded)
+                                </Message>}
+                </Container>}
+                {this.state.publishType === "manually" &&
+                    <div>
+                        <strong>Manually publishing</strong>
+                        Send ETH transaction to any address with next input data (HEX): <br />
+                        <p><small>{this.state.publishDataHex}</small></p>
+                    </div>}
             </div>
         );
     }
@@ -213,12 +181,12 @@ class NewNote extends React.Component<IProps, IState> {
         }
     }
 
-    private onTextChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        await this.setState({ dataText: event.target.value })
+    private onTextChange = async (event: any, data: TextAreaProps) => {
+        await this.setState({ dataText: data.value as string })
         await this.calculateEstimatePrice()
     }
 
-    private onFileAdded = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    private onFileAdded = async (event: any) => {
         if (event.target.files) {
             await this.setState({ dataFile: event.target.files[0] })
             await this.calculateEstimatePrice()

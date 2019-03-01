@@ -2,11 +2,12 @@
 import * as React from 'react';
 import ReactGA from 'react-ga';
 import { RouteComponentProps } from 'react-router-dom';
-import {
-    Col,
-    Container,
-    Row,
-} from 'reactstrap';
+import { Container, Grid } from 'semantic-ui-react';
+// import {
+//     Col,
+//     Container,
+//     Row,
+// } from 'reactstrap';
 // import CardBody from 'reactstrap/lib/CardBody';
 import { API_URL, WEB3_PROVIDER } from 'src/constants';
 import { INote } from 'src/types/Note';
@@ -46,19 +47,20 @@ class NoteView extends React.Component<IProps, IState> {
         return (
             <div>
                 <IconGithub />
-            <Container style={{ paddingTop: 10 }}>
-                <Row>
-                    <Col sm="12">
-                        <Header />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="12">
-                        {this.state.note.text_preview && <NoteCard note={this.state.note} web3Instance={this.state.web3Instance} fullInfo={true} />}
-                    </Col>
-                </Row>
-            </Container>
-            <Footer />
+                <Container style={{ paddingTop: 10 }}>
+                    <Grid.Row>
+                        <Grid.Column sm="12">
+                            <Header />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row style={{ marginTop: "1rem" }}>
+                        <Grid.Column width="2">
+                            {this.state.note.text_preview && <NoteCard note={this.state.note} web3Instance={this.state.web3Instance} fullInfo={true} />}
+
+                        </Grid.Column>
+                    </Grid.Row>
+                </Container>
+                <Footer />
             </div>
         );
     }

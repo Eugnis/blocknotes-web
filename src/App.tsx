@@ -6,7 +6,7 @@ import './App.css';
 import Routes from './Routes';
 
 class App extends React.Component {
-  public componentDidMount() {
+  public componentWillMount() {
     ReactGA.initialize('UA-127863694-2');
   }
   public render() {

@@ -1,10 +1,8 @@
 {
   "name": "blocknotes-web",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.2.0",
+  "private": false,
   "dependencies": {
-    "bootstrap": "^4.2.1",
-    "bootstrap-loader": "^3.0.2",
     "moment": "^2.23.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
@@ -16,19 +14,20 @@
     "react-scripts-ts": "3.1.0",
     "react-sticky": "^6.0.3",
     "react-toastify": "^4.5.2",
-    "reactstrap": "^7.0.2",
     "redux": "^4.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.85.0",
     "web3": "1.0.0-beta.34"
   },
+  "proxy": "http://127.0.0.1:8086",
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "postinstall": "Remove-Item -path node_modules/web3/index.d.ts"
+    "postinstall": "Remove-Item node_modules/web3/index.d.ts"
   },
   "devDependencies": {
-    "@types/bootstrap": "^4.2.0",
     "@types/jest": "^23.3.11",
     "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",
@@ -38,7 +37,6 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/react-sticky": "^6.0.2",
     "@types/react-toastify": "^4.0.1",
-    "@types/reactstrap": "^6.4.3",
     "@types/redux": "^3.6.0",
     "@types/web3": "^1.0.14",
     "typescript": "^3.2.2"

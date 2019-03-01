@@ -1,21 +1,9 @@
-import * as moment from 'moment'
+import * as moment from 'moment';
 import * as React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
-import {
-    Badge,
-    Card,
-    CardFooter,
-    CardHeader,
-    CardText,
-    CardTitle,
-    Col,
-    NavLink,
-    Row,
-    Tooltip,
-} from 'reactstrap';
-import CardBody from 'reactstrap/lib/CardBody';
-import Container from 'reactstrap/lib/Container';
-// import { IMAGE_404 } from 'src/constants';
+
+import { Button, Card, Container, Grid, Label, Popup } from 'semantic-ui-react';
+
 import { INote } from 'src/types/Note';
 import Web3 = require('web3')
 import { Transaction } from 'web3/eth/types';
@@ -84,88 +72,109 @@ class NoteCard extends React.Component<IProps, IState> {
 
     public render() {
         return (
-            <Card>
-                <CardHeader>
-                    <img src={this.netIcon(this.state.note.net_name)} className="noteImg" alt="img-1" />
-                </CardHeader>
-                <CardBody inverse="true" color="primary">
-                    {this.state.fullInfo ?
-                        <CardTitle>
-                            <NavLink href={this.noteLink(this.state.note.hash)} target="_blank">{this.state.note.hash}</NavLink>
-                        </CardTitle> :
-                        <CardTitle>
-                            <span style={{ color: "#007bff" }} >{this.state.note.hash}</span><br />
-                            <Badge color="info" href={this.noteReadMore(this.state.note.hash)} target="_blank">More info</Badge>
-                        </CardTitle>}
-                    {this.state.dataFile !== "" &&
-                        <Container style={{ placeItems: "center" }}>
-                            {this.state.note.data_type.includes("image") &&
-                                <Row style={{ placeItems: "center" }}>
-                                    <Col>
-                                        <img
-                                            onError={
-                                                // tslint:disable-next-line:jsx-no-lambda
-                                                (e) => {
-                                                    this.setState({ dataFile: process.env.PUBLIC_URL + `images/not_found_icon.svg` })
-                                                }}
-                                            src={this.state.dataFile} style={{ maxWidth: "200px", maxHeight: "200px" }} alt={this.state.note.hash} />
-                                    </Col>
-                                </Row>}
-                            <Row style={{ placeItems: "center" }}>
-                                <Col>
-                                    <a href={this.state.fileURL} download={this.state.note.hash + "." + this.state.note.text_preview}>Download</a>
-                                </Col>
-                            </Row>
-                        </Container>}
-                    {this.state.fullInfo ?
-                        this.state.fullTransaction.from &&
-                        <LoadingOverlay
-                            active={!this.state.fullTransaction.from}
-                            fadeSpeed={500}
-                            spinner={<LoadingSpinner />}>
-                            <Container >
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>From:</strong></Col>
-                                    <Col md="6">{this.state.fullTransaction.from}{" "}<Badge color="info" href={this.addrLink(this.state.fullTransaction.from)} target="_blank">Etherscan</Badge></Col>
-                                </Row>
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>To:</strong></Col>
-                                    <Col md="6">{this.state.fullTransaction.to}{" "}<Badge color="info" href={this.addrLink(this.state.fullTransaction.to)} target="_blank">Etherscan</Badge></Col>
-                                </Row>
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>Fee:</strong></Col>
-                                    <Col md="6">{this.state.fullTransaction.gasPrice} ({this.state.feePrice})</Col>
-                                </Row>
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>Value:</strong></Col>
-                                    <Col md="6">{this.state.txPrice}</Col>
-                                </Row>
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>Text:</strong></Col>
-                                    <Col md="6">{this.state.note.text_preview}</Col>
-                                </Row>
-                                <Row style={{ justifyContent: "center" }}>
-                                    <Col md="1"><strong>HEX:</strong></Col>
-                                    <Col md="6">{this.state.fullTransaction.input}</Col>
-                                </Row>
-                            </Container>
-                        </LoadingOverlay> : this.state.printableHEX !== "" ? <code>Text: {this.state.note.text_preview}<br />HEX: {this.state.printableHEX}</code> :
-                            this.state.isPrintable ? <code>{this.state.note.text_preview}</code> : <code>Could be not printable. <a href="javascript:void(0)" onClick={this.toggleViewUnknown}>View?</a></code>}
-                    <CardText>
-                        <small id={"timeTooltip_" + this.state.note.id} className="text-muted">{this.state.txTime.fromNow()}</small>
-                        <Tooltip placement="bottom" isOpen={this.state.timeTooltipOpen} target={"timeTooltip_" + this.state.note.id} toggle={this.toggle}>
-                            <small>{this.state.txTime.format('LLLL')}</small>
-                        </Tooltip>
-                    </CardText>
-                </CardBody>
-                <CardFooter className="text-muted">
+            <Card style={this.state.fullInfo ? { wordWrap: "break-word", width: "auto" } : { wordWrap: "break-word" }}>
+                <Card.Content>
+                    <Card.Header>
+                        <img src={this.netIcon(this.state.note.net_name)} className="noteImg" alt="img-1" />
+                    </Card.Header>
+                    <Card.Description>
+                        {this.state.fullInfo ?
+                            <Card.Meta>
+                                <a href={this.noteLink(this.state.note.hash)} target="_blank">{this.state.note.hash}</a>
+                            </Card.Meta> :
+                            <Card.Meta>
+                                <span style={{ color: "#007bff" }} >{this.state.note.hash}</span><br />
+                                <Button color="teal" content="More info" size="mini" href={this.noteReadMore(this.state.note.hash)} target="_blank" />
+                                {/* <a href={this.noteReadMore(this.state.note.hash)} target="_blank">More info</a>
+                                </Label> */}
+                            </Card.Meta>}
+                        {this.state.dataFile !== "" &&
+                            <Container style={{ placeItems: "center" }}>
+                                {this.state.note.data_type.includes("image") &&
+                                    <Grid.Row style={{ placeItems: "center" }}>
+                                        <Grid.Column>
+                                            <img
+                                                onError={
+                                                    // tslint:disable-next-line:jsx-no-lambda
+                                                    (e) => {
+                                                        this.setState({ dataFile: process.env.PUBLIC_URL + `images/not_found_icon.svg` })
+                                                    }}
+                                                src={this.state.dataFile} style={{ maxWidth: "200px", maxHeight: "200px" }} alt={this.state.note.hash} />
+                                        </Grid.Column>
+                                    </Grid.Row>}
+                                <Grid.Row style={{ placeItems: "center" }}>
+                                    <Grid.Column>
+                                        <a href={this.state.fileURL} download={this.state.note.hash + "." + this.state.note.text_preview}>Download</a>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Container>}
+                        {this.state.fullInfo ?
+                            <LoadingOverlay
+                                active={!this.state.fullTransaction.from}
+                                fadeSpeed={500}
+                                spinner={<LoadingSpinner />}>
+                                <Grid columns={2}>
+                                    <Grid.Row>
+                                        <Grid.Column width="2"><strong>From:</strong></Grid.Column>
+                                        <Grid.Column width="14">{this.state.fullTransaction.from}{" "}<Label color="blue" href={this.addrLink(this.state.fullTransaction.from)} target="_blank">Etherscan</Label></Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width="2"><strong>To:</strong></Grid.Column>
+                                        <Grid.Column width="14">{this.state.fullTransaction.to}{" "}<Label color="blue" href={this.addrLink(this.state.fullTransaction.to)} target="_blank">Etherscan</Label></Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width="2"><strong>Fee:</strong></Grid.Column>
+                                        <Grid.Column width="14">{this.state.fullTransaction.gasPrice} ({this.state.feePrice})</Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width="2"><strong>Value:</strong></Grid.Column>
+                                        <Grid.Column width="14">{this.state.txPrice}</Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row style={{ justifyContent: "center" }}>
+                                        <Grid.Column width="2"><strong>Text:</strong></Grid.Column>
+                                        <Grid.Column width="14"><i>{this.state.note.text_preview}</i></Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row style={{ justifyContent: "center" }}>
+                                        <Grid.Column width="2"><strong>HEX:</strong></Grid.Column>
+                                        <Grid.Column width="14"><small>{this.state.fullTransaction.input}</small></Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </LoadingOverlay> :
+                            this.state.printableHEX !== "" ?
+                                <div><p><strong>Text:</strong> <i>{this.state.note.text_preview}</i></p><p><strong>HEX:</strong> <small>{this.state.printableHEX}</small></p></div> :
+                                this.state.isPrintable ?
+                                    <p><i>{this.state.note.text_preview}</i></p> :
+                                    <Container><p>Could be not printable. <a href="javascript:void(0)" onClick={this.toggleViewUnknown}>View?</a></p></Container>}
+                    </Card.Description>
+                    <Popup position="bottom center" trigger={<small id={"timeTooltip_" + this.state.note.id} className="text-muted">{this.state.txTime.fromNow()}</small>} content={this.state.txTime.format('LLLL')} />
+
+                </Card.Content>
+                <Card.Content extra={true}>
+
+                    <Label color="orange" size="tiny" style={{ textTransform: 'capitalize' }}>{this.state.note.data_type}</Label>{" "}
+                    <Label color="orange" size="tiny" >Size {this.state.note.data_size}B</Label>{" "}
+                    <Label color="orange" size="tiny" >Block #{this.state.note.block_num}</Label>
+
+                </Card.Content>
+                {/* <CardText>
+                            <Tooltip placement="bottom" isOpen={this.state.timeTooltipOpen} target={"timeTooltip_" + this.state.note.id} toggle={this.toggle}>
+                                <small>{this.state.txTime.format('LLLL')}</small>
+                            </Tooltip>
+                        </CardText> */}
+
+
+
+                {/* <CardBody inverse="true" color="primary">
+
+                </CardBody> */}
+                {/* <CardFooter className="text-muted">
                     <Container>
                         <Badge color="secondary" pill={true} style={{ textTransform: 'capitalize' }}>{this.state.note.data_type}</Badge>{" "}
                         <Badge color="secondary" pill={true}>Size {this.state.note.data_size}B</Badge>{" "}
                         <Badge color="secondary" pill={true}>Block #{this.state.note.block_num}</Badge>
                     </Container>
 
-                </CardFooter>
+                </CardFooter> */}
             </Card>
         );
     }

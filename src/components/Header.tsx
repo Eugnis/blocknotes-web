@@ -1,18 +1,9 @@
 // import * as moment from 'moment'
 import * as React from 'react';
-// import { RouteComponentProps } from 'react-router-dom';
-import {
-    Button,
-    Jumbotron,
-} from 'reactstrap';
-// import CardBody from 'reactstrap/lib/CardBody';
+import { Button, Header as HeaderUi, Segment } from 'semantic-ui-react';
 import { WEB3_PROVIDER } from 'src/constants';
 import Web3 = require('web3')
 import NewNote from './NewNote';
-// import NoteCard from './NoteCard';
-
-// export interface IProps{
-// }
 
 export interface IState {
     mode: string
@@ -29,40 +20,33 @@ class Header extends React.Component<{}, IState> {
 
     }
 
-    // public async componentDidMount() {
-
-    // }
-
     public render() {
-        // const txTime = moment(this.state.note.tx_time)
         return (
-            <Jumbotron>
+            <Segment>
                 {this.state.mode === "main" &&
                     <div>
-                        <h1 className="display-3">BlockNotes</h1>
-                        <p className="lead">Look or search for published text, images, files on cryptocurrency blockchain.</p>
+                        <HeaderUi as='h1'><a href="/">BlockNotes</a></HeaderUi>
+                        <HeaderUi as='h2'>Look or search for published text, images, files on cryptocurrency blockchain.</HeaderUi>
                         <hr className="my-2" />
-                        <p>We're not host images or files, and not taking any responsibility for data you can find here :)</p>
+                        <p>We're not host images or files, and not taking any responsibility for data you can find here 🧐</p>
                         <p>Whole Ethereum blockchain presented, more blockchains will be added later. You can publish your own note in any type with help of our app here:</p>
                         <p className="lead">
-                            {/* <Button color="primary">Learn More</Button> */}
-                            <Button color="primary" onClick={
+                            <Button color="grey" content='Publish your own note' onClick={
                                 // tslint:disable-next-line:jsx-no-lambda
-                                () => this.onModeChange("newNote")}>Publish your own note</Button>
+                                () => this.onModeChange("newNote")} />
                         </p>
                     </div>}
                 {this.state.mode === "newNote" &&
                     <div>
                         <NewNote web3Instance={this.state.web3Instance} />
-                        {/* <h1 className="display-3">Creating new note</h1> */}
                         <p className="lead">
-                            <Button color="primary" onClick={
+                            <Button content='Go back' icon='left arrow' labelPosition='left' onClick={
                                 // tslint:disable-next-line:jsx-no-lambda
-                                () => this.onModeChange("main")}>Go back</Button>
+                                () => this.onModeChange("main")} />
                         </p>
 
                     </div>}
-            </Jumbotron>
+            </Segment>
         );
     }
 
