@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": false,
   "dependencies": {
-    "moment": "^2.23.0",
+    "moment": "^2.29.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-ga": "^2.5.6",
